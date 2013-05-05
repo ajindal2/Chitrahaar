@@ -24,8 +24,10 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f080001;
-        public static final int viewVideoButton=0x7f080000;
+        public static final int action_settings=0x7f080003;
+        public static final int player_fragment=0x7f080001;
+        public static final int tutorial_text=0x7f080002;
+        public static final int view_container=0x7f080000;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -51,11 +53,6 @@ public final class R {
             backward-compatibility can go here.
         
 
-        Base application theme for API 11+. This theme completely replaces
-        AppBaseTheme from res/values/styles.xml on API 11+ devices.
-    
- API 11 theme customizations can go here. 
-
         Base application theme for API 14+. This theme completely replaces
         AppBaseTheme from BOTH res/values/styles.xml and
         res/values-v11/styles.xml on API 14+ devices.
@@ -67,5 +64,6 @@ public final class R {
  All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f060001;
+        public static final int OverlayActionBarTheme=0x7f060002;
     }
 }
