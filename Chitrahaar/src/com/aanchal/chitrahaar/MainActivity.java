@@ -32,7 +32,7 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
 
   private ActionBarPaddedFrameLayout viewContainer;
   private YouTubePlayerFragment playerFragment;
-  private View tutorialTextView;
+  private YouTubePlayer m_player;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,6 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
     viewContainer = (ActionBarPaddedFrameLayout) findViewById(R.id.view_container);
     playerFragment =
         (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.player_fragment);
-    tutorialTextView = findViewById(R.id.tutorial_text);
     playerFragment.initialize(DeveloperKey.DEVELOPER_KEY, this);
     viewContainer.setActionBar(getActionBar());
 
@@ -74,12 +73,13 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
   @Override
   public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player,
       boolean wasRestored) {
+	m_player = player;
     player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
+    player.setFullscreen(true);
     player.setOnFullscreenListener(this);
-
     if (!wasRestored) {
       player.cueVideo("9c6W4CCU9M4");
-      player.setFullscreen(true);
+      player.setShowFullscreenButton(false);
     }
   }
 
@@ -91,16 +91,12 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
   @Override
   public void onFullscreen(boolean fullscreen) {
     viewContainer.setEnablePadding(!fullscreen);
-
     ViewGroup.LayoutParams playerParams = playerFragment.getView().getLayoutParams();
     if (fullscreen) {
-      tutorialTextView.setVisibility(View.GONE);
       playerParams.width = MATCH_PARENT;
       playerParams.height = MATCH_PARENT;
     } else {
-      tutorialTextView.setVisibility(View.VISIBLE);
-      playerParams.width = 0;
-      playerParams.height = WRAP_CONTENT;
+      m_player.setFullscreen(true);
     }
   }
 

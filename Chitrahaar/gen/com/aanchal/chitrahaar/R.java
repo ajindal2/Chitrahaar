@@ -26,9 +26,12 @@ public final class R {
         public static final int next=0x7f020002;
     }
     public static final class id {
+<<<<<<< HEAD
         public static final int next_song=0x7f080003;
+=======
+        public static final int menu_save=0x7f080002;
+>>>>>>> 7b5f5b9fc12a574aca4cc108820aefef33c1bf87
         public static final int player_fragment=0x7f080001;
-        public static final int tutorial_text=0x7f080002;
         public static final int view_container=0x7f080000;
     }
     public static final class layout {
