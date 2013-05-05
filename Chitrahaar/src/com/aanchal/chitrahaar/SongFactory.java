@@ -99,6 +99,7 @@ public class SongFactory {
 	// returns query results in JSON form
 	private static JSONArray getResults(String query) {
 		try {
+		// TODO: Get short and medium duration only, exclude long videos
 		String url="http://gdata.youtube.com/feeds/api/videos?q="+query+"&max-results="+MAX_QUERY_SONGS+"&v=2&format=5&alt=jsonc";
 		URL jsonURL = new URL(url);
 		URLConnection jc = jsonURL.openConnection();
