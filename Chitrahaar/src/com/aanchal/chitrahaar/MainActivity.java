@@ -5,6 +5,8 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import com.aanchal.chitrahaar.YouTubeFailureRecoveryActivity;
 import com.aanchal.chitrahaar.MainActivity.ActionBarPaddedFrameLayout;
+import com.google.android.youtube.player.YouTubePlayer.ErrorReason;
+import com.google.android.youtube.player.YouTubePlayer.PlayerStateChangeListener;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.android.youtube.player.YouTubePlayerView;
@@ -16,6 +18,7 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,14 +32,65 @@ import android.widget.Toast;
 @TargetApi(11)
 public class MainActivity extends YouTubeFailureRecoveryActivity implements
     YouTubePlayer.OnFullscreenListener {
+	
+	private final class MyPlayerStateChangeListener implements PlayerStateChangeListener {
+	
+	    @Override
+	    public void onLoaded(String videoId) {
+	    	m_player.play();
+	    }
+
+	    @Override
+	    public void onVideoEnded() {
+	    	String videoId = songFactory.getNextVideoId();
+	    	if (videoId != null) {
+	    		m_player.cueVideo(videoId);
+	    	}
+	    }
+
+		@Override
+		public void onAdStarted() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onError(ErrorReason arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onLoading() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onVideoStarted() {
+			// TODO Auto-generated method stub
+			
+		}
+	  }
+
 
   private ActionBarPaddedFrameLayout viewContainer;
   private YouTubePlayerFragment playerFragment;
   private YouTubePlayer m_player;
+  private SongFactory songFactory;
+  private MyPlayerStateChangeListener playerStateChangeListener;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    
+    playerStateChangeListener = new MyPlayerStateChangeListener();
+    
+    // TODO: This allows us to make networking calls on UI thread but discouraged
+    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+    StrictMode.setThreadPolicy(policy);
+    
+    songFactory = new SongFactory();
 
     setContentView(R.layout.activity_main);
 
@@ -56,12 +110,17 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
       inflater.inflate(R.menu.main, menu);
       return true;
   }
-  
+    
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
     case R.id.next_song:
-      Toast.makeText(this, "Menu Item 1 selected", Toast.LENGTH_SHORT).show();
+      String videoId = songFactory.getNextVideoId();
+      if (videoId != null) {
+    	  m_player.cueVideo(videoId);
+      }
+      else
+    	  Toast.makeText(this, "Unable to get a new song. Please try again later", Toast.LENGTH_SHORT).show();
       break;
     default:
         break;
@@ -77,6 +136,7 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
     player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
     player.setFullscreen(true);
     player.setOnFullscreenListener(this);
+    player.setPlayerStateChangeListener(playerStateChangeListener);
     if (!wasRestored) {
       player.cueVideo("9c6W4CCU9M4");
       player.setShowFullscreenButton(false);
