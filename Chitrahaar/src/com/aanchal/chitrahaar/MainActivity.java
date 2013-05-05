@@ -60,10 +60,10 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
       boolean wasRestored) {
     player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
     player.setOnFullscreenListener(this);
-
     if (!wasRestored) {
       player.cueVideo("9c6W4CCU9M4");
       player.setFullscreen(true);
+      player.setShowFullscreenButton(false);
     }
   }
 
