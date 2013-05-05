@@ -17,39 +17,12 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-
-/*public class MainActivity extends YouTubeFailureRecoveryActivity {
-	  @Override
-	  public void onCreate(Bundle savedInstanceState) {
-	    super.onCreate(savedInstanceState);
-	    setContentView(R.layout.activity_main);
-	    
-	    YouTubePlayerView youTubeView = (YouTubePlayerView) findViewById(R.id.youtube_view);
-	    youTubeView.initialize(DeveloperKey.DEVELOPER_KEY, this); 
-	  }
-
-	  @Override
-	  public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean wasRestored) {
-		  //this.player=player;
-	    if (!wasRestored) {
-	      player.cueVideo("wKJ9KzGQq0w");
-	      player.setFullscreen(true);
-	    }
-	  }
-
-	  @Override
-	  protected YouTubePlayer.Provider getYouTubePlayerProvider() {
-	    return (YouTubePlayerView) findViewById(R.id.youtube_view);
-	  }
-
-	}*/
-
-
-
 
 @TargetApi(11)
 public class MainActivity extends YouTubeFailureRecoveryActivity implements
@@ -74,9 +47,14 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
 
     // Action bar background is transparent by default.
     getActionBar().setBackgroundDrawable(new ColorDrawable(0xAA000000));
-   // getActionBar().
-  }
 
+  }
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+      MenuInflater inflater = getMenuInflater();
+      inflater.inflate(R.menu.main, menu);
+      return true;
+  }
   @Override
   public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player,
       boolean wasRestored) {
@@ -154,59 +132,3 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
   }
 
 }
-
-
-
-
-
-
-/*public class MainActivity extends   Activity {
-	private static final int REQ_START_STANDALONE_PLAYER = 1;
-	  private static final int REQ_RESOLVE_SERVICE_MISSING = 2;
-	  YouTubePlayerView  playerView;
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		//playerView = (YouTubePlayerView) findViewById(R.id.player);
-		//playerView.addView(a)
-		 //playerView.initialize(DeveloperKey.DEVELOPER_KEY, this);
-		        String videoId = "__BYsQo4QaY";   
-		        Intent intent = YouTubeStandalonePlayer.createVideoIntent(MainActivity.this, DeveloperKey.DEVELOPER_KEY, videoId);
-		        if (intent != null) {
-		            if (canResolveIntent(intent)) {
-		              startActivityForResult(intent, REQ_START_STANDALONE_PLAYER);
-		            } else {Log.v("aanchal","youtube error");}
-		          } 
-	}
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    super.onActivityResult(requestCode, resultCode, data);
-	    if (requestCode == REQ_START_STANDALONE_PLAYER && resultCode != RESULT_OK) {
-	      YouTubeInitializationResult errorReason =
-	          YouTubeStandalonePlayer.getReturnedInitializationResult(data);
-	      if (errorReason.isUserRecoverableError()) {
-	        errorReason.getErrorDialog(this, 0).show();
-	      } else {
-	        String errorMessage =
-	            String.format(getString(R.string.error_player), errorReason.toString());
-	        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
-	      }
-	    }
-	  }
-
-	  private boolean canResolveIntent(Intent intent) {
-	    List<ResolveInfo> resolveInfo = getPackageManager().queryIntentActivities(intent, 0);
-	    return resolveInfo != null && !resolveInfo.isEmpty();
-	  }
-
-	  private int parseInt(String text, int defaultValue) {
-	    if (!TextUtils.isEmpty(text)) {
-	      try {
-	        return Integer.parseInt(text);
-	      } catch (NumberFormatException e) {
-	        // fall through
-	      }
-	    }
-	    return defaultValue;
-	  }  
-}*/

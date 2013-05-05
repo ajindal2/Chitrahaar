@@ -26,5 +26,5 @@
           
           android:textAppearance="@android:style/TextAppearance.Small"/>
     </LinearLayout>
-
+ 
 </view>
