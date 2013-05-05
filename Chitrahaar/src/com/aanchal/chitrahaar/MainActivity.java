@@ -19,10 +19,12 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 @TargetApi(11)
 public class MainActivity extends YouTubeFailureRecoveryActivity implements
@@ -46,14 +48,28 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
 
     // Action bar background is transparent by default.
     getActionBar().setBackgroundDrawable(new ColorDrawable(0xAA000000));
-
   }
+  
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
       MenuInflater inflater = getMenuInflater();
       inflater.inflate(R.menu.main, menu);
       return true;
   }
+  
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+    case R.id.next_song:
+      Toast.makeText(this, "Menu Item 1 selected", Toast.LENGTH_SHORT).show();
+      break;
+    default:
+        break;
+      }
+
+      return true;
+ }
+  
   @Override
   public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player,
       boolean wasRestored) {
