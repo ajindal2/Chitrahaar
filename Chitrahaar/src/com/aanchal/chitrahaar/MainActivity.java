@@ -42,10 +42,7 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
 
 	    @Override
 	    public void onVideoEnded() {
-	    	String videoId = songFactory.getNextVideoId();
-	    	if (videoId != null) {
-	    		m_player.cueVideo(videoId);
-	    	}
+	    	playNextSong();
 	    }
 
 		@Override
@@ -110,17 +107,21 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
       inflater.inflate(R.menu.main, menu);
       return true;
   }
+  
+  private void playNextSong() {
+	  String videoId = songFactory.getNextVideoId();
+      if (videoId != null) {
+    	  m_player.cueVideo(videoId);
+      }
+      else
+    	  Toast.makeText(this, "Unable to get a new song. Please try again later", Toast.LENGTH_SHORT).show();  
+  }
     
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
     case R.id.next_song:
-      String videoId = songFactory.getNextVideoId();
-      if (videoId != null) {
-    	  m_player.cueVideo(videoId);
-      }
-      else
-    	  Toast.makeText(this, "Unable to get a new song. Please try again later", Toast.LENGTH_SHORT).show();
+      playNextSong();
       break;
     default:
         break;
@@ -138,13 +139,7 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
     player.setOnFullscreenListener(this);
     player.setPlayerStateChangeListener(playerStateChangeListener);
     if (!wasRestored) {
-      //player.cueVideo("9c6W4CCU9M4");
-    	String videoId = songFactory.getNextVideoId();
-        if (videoId != null) {
-      	  m_player.cueVideo(videoId);
-        }
-        else
-      	  Toast.makeText(this, "Unable to get a new song. Please try again later", Toast.LENGTH_SHORT).show();
+      playNextSong();
       player.setShowFullscreenButton(false);
     }
   }
