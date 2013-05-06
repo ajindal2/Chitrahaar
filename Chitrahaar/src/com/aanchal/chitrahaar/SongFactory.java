@@ -25,6 +25,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -49,8 +50,8 @@ public class SongFactory {
 	private Queue<Song> dishantSongs_ = new LinkedList<Song>(); // queue containing yet to be played dishant songs
 	private Queue<Song> dubaiSongs_ = new LinkedList<Song>();  // yet to be played dubai songs
 
-	private Song lastPlayedDubaiSong_ = null; 
-	private Song lastPlayedDishantSong_ = null;
+	private Song lastPlayedDubaiSong_ = new Song("","",""); 
+	private Song lastPlayedDishantSong_ = new Song("","","");
 	
 	private static Document loadXMLFromString(String xml) throws Exception
     {
@@ -61,38 +62,53 @@ public class SongFactory {
     }
 	
 	// query dubai, parse and return the last 10 songs, returns null if query fails
-	private static Song[] getLastDubaiSongs() {
-		SongFactory parser = new SongFactory();
-		String xml = parser.getXmlFromUrl(DUBAI_METADATA_URL); // getting XML
-		Document doc = parser.getDomElement(xml); // getting DOM element
-		 
-		NodeList nl = doc.getElementsByTagName("nowplaying-info");
-		for (int i = 0; i < nl.getLength(); i++) {
-            Element e = (Element) nl.item(i);
-            String name = parser.getValue(e, "property name");
-            Log.v("AANCHAL", name);
-            }
-		return null;
+	private Song[] getLastDubaiSongs() {
+		try{
+		String xml = getXmlFromUrl(DUBAI_METADATA_URL); // getting XML
+		LinkedList<Song> temp=new LinkedList<Song>();
+		xml=xml.substring(41);
+		Document doc = loadXMLFromString(xml); // getting DOM element
+		
+		NodeList songs = doc.getElementsByTagName("property");
+		
+		String title="", album="";
+		for(int i = 0; i < songs.getLength(); ++i) {
+			Element ele = (Element) songs.item(i);
+			String name = ele.getAttribute("name");
+			if(name.equals("cue_title")){
+				title=getCharacterDataFromElement(ele);
+			}
+			else if(name.equals("track_artist_name")){
+				album=getCharacterDataFromElement(ele);
+				Song s= new Song(title, album, "");
+				if(title.equals(lastPlayedDubaiSong_.title)&&album.equals(lastPlayedDubaiSong_.album)){				
+					break;
+				}
+				else
+					temp.add(s);
+			}	
+		}
+		int i=temp.size()-1;
+		Song[] ret = new Song[temp.size()];
+		while(i>=0){
+			ret[i]=temp.removeFirst();
+			i--;
+		}
+		return ret;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
-	public String getValue(Element item, String str) {     
-	    NodeList n = item.getElementsByTagName(str);       
-	    return this.getElementValue(n.item(0));
-	}
-	
-	public final String getElementValue( Node elem ) {
-        Node child;
-        if( elem != null){
-            if (elem.hasChildNodes()){
-                for( child = elem.getFirstChild(); child != null; child = child.getNextSibling() ){
-                    if( child.getNodeType() == Node.TEXT_NODE  ){
-                        return child.getNodeValue();
-                    }
-                }
-            }
-        }
-        return "";
- } 
+	public static String getCharacterDataFromElement(Element e) {
+	    Node child = e.getFirstChild();
+	    if (child instanceof CharacterData) {
+	      CharacterData cd = (CharacterData) child;
+	      return cd.getData();
+	    }
+	    return "";
+	  }
 	
 	public String getXmlFromUrl(String url) {
         String xml = null;
@@ -115,31 +131,6 @@ public class SongFactory {
         }
         // return XML
         return xml;
-    }
-	
-	public Document getDomElement(String xml){
-        Document doc = null;
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        try {
- 
-            DocumentBuilder db = dbf.newDocumentBuilder();
- 
-            InputSource is = new InputSource();
-                is.setCharacterStream(new StringReader(xml));
-                doc = db.parse(is);
- 
-            } catch (ParserConfigurationException e) {
-                Log.e("Error: ", e.getMessage());
-                return null;
-            } catch (SAXException e) {
-                Log.e("Error: ", e.getMessage());
-                return null;
-            } catch (IOException e) {
-                Log.e("Error: ", e.getMessage());
-                return null;
-            }
-                // return DOM
-            return doc;
     }
 	
 	// query dishant and return last
@@ -178,18 +169,24 @@ public class SongFactory {
 	}
 	
 	private Boolean updateDubaiSongs() {
-		assert dubaiSongs_.isEmpty();
+		//assert dubaiSongs_.isEmpty();
 		// get last 10 songs
 		// if most recent song is same as lastPlayedDubaiSong
 		// return false
 		// else update the queue and return true
+		assert dubaiSongs_.isEmpty();
+		Song[] newSongs = getLastDubaiSongs();
+		if (newSongs != null && newSongs.length != 0) {
+			for(int i = 0; i < newSongs.length; ++i) 
+				dubaiSongs_.add(newSongs[i]);
+			return true;
+		}
 		return false;
+		
 	}
 	
 	private Boolean updateDishantSongs() {
 		assert dishantSongs_.isEmpty();
-		// similar logic as above except there is no need to check for updation
-		// return false if the query fails
 		Song[] newSongs = getLastDishantSongs();
 		if (newSongs != null && newSongs.length != 0) {
 			for(int i = 0; i < newSongs.length; ++i) 
