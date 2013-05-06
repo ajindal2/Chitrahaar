@@ -80,7 +80,7 @@ public class SongFactory {
 			}
 			else if(name.equals("track_artist_name")){
 				album=getCharacterDataFromElement(ele);
-				Song s= new Song(title, album, "");
+				Song s= new Song(title, album, album);
 				if(title.equals(lastPlayedDubaiSong_.title)&&album.equals(lastPlayedDubaiSong_.album)){				
 					break;
 				}
