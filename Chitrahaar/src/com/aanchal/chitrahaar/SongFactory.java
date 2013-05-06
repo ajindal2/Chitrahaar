@@ -7,6 +7,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.LinkedList;
 import java.util.Queue;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -34,15 +35,20 @@ import org.xml.sax.SAXException;
 //import android.sax.Element;
 import android.util.Log;
 
+import android.util.Log;
+
 // Retrieves and manages songs
 public class SongFactory {	
 	private static final int MAX_QUERY_SONGS = 10; // maximum query results per songs
 	private static final String YOUTUBE_VIDEO_INFORMATION_URL = "http://www.youtube.com/get_video_info?&video_id=";
 	private static final String DISHANT_URL = "http://anyorigin.com/get/?url=dishant.com/radiojukebox.php?channel=new&action=0";
 	private static final String DISHANT_METADATA_URL = "http://anyorigin.com/get/?url=dishant.com/trackPlaylist.php?trackid=";
+
 	private static final String DUBAI_METADATA_URL = "http://www.arn.ae/city1016.ae/fb_playing_now/ServerScripts/GetSongInfo20.php";
-	private Queue<Song> dishantSongs_; // queue containing yet to be played dishant songs
-	private Queue<Song> dubaiSongs_;  // yet to be played dubai songs
+	
+	private Queue<Song> dishantSongs_ = new LinkedList<Song>(); // queue containing yet to be played dishant songs
+	private Queue<Song> dubaiSongs_ = new LinkedList<Song>();  // yet to be played dubai songs
+
 	private Song lastPlayedDubaiSong_ = null; 
 	private Song lastPlayedDishantSong_ = null;
 	
@@ -144,8 +150,7 @@ public class SongFactory {
 			InputStream is = jc.getInputStream();
 			String jsonTxt = IOUtils.toString( is );
 			JSONObject jj = new JSONObject(jsonTxt);
-			JSONObject htmlData = jj.getJSONObject("data");
-			String contents = htmlData.getString("contents");
+			String contents = jj.getString("contents");
 			int idx1 = contents.indexOf("HTMLNAME=") + 9;
 			int idx2 = contents.indexOf("&SERVERIP=");
 			String trackids = contents.substring(idx1, idx2);
@@ -154,13 +159,20 @@ public class SongFactory {
 			is = jc.getInputStream();
 			jsonTxt = IOUtils.toString( is );
 			jj = new JSONObject(jsonTxt);
-			htmlData = jj.getJSONObject("data");
-			contents = htmlData.getString("contents");
+			contents = jj.getString("contents");
 			Document songData = loadXMLFromString(contents);
-			// parse all the songs
-			// TODO
-			return null;
+			NodeList songs = songData.getElementsByTagName("song");
+			Song[] ret = new Song[songs.getLength()];
+			for(int i = 0; i < songs.getLength(); ++i) {
+				Element ele = (Element) songs.item(i);
+				String title = ele.getAttribute("title");
+				String album = ele.getAttribute("album");
+				String artist = ele.getAttribute("musicdir");
+				ret[i] = new Song(title, album, artist);
+			}
+			return ret;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
