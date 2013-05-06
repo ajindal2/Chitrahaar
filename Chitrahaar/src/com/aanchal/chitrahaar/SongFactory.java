@@ -1,24 +1,38 @@
 package com.aanchal.chitrahaar;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Queue;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+//import android.sax.Element;
+import android.util.Log;
 
 // Retrieves and manages songs
 public class SongFactory {	
@@ -26,6 +40,7 @@ public class SongFactory {
 	private static final String YOUTUBE_VIDEO_INFORMATION_URL = "http://www.youtube.com/get_video_info?&video_id=";
 	private static final String DISHANT_URL = "http://anyorigin.com/get/?url=dishant.com/radiojukebox.php?channel=new&action=0";
 	private static final String DISHANT_METADATA_URL = "http://anyorigin.com/get/?url=dishant.com/trackPlaylist.php?trackid=";
+	private static final String DUBAI_METADATA_URL = "http://www.arn.ae/city1016.ae/fb_playing_now/ServerScripts/GetSongInfo20.php";
 	private Queue<Song> dishantSongs_; // queue containing yet to be played dishant songs
 	private Queue<Song> dubaiSongs_;  // yet to be played dubai songs
 	private Song lastPlayedDubaiSong_ = null; 
@@ -41,9 +56,85 @@ public class SongFactory {
 	
 	// query dubai, parse and return the last 10 songs, returns null if query fails
 	private static Song[] getLastDubaiSongs() {
-		
+		SongFactory parser = new SongFactory();
+		String xml = parser.getXmlFromUrl(DUBAI_METADATA_URL); // getting XML
+		Document doc = parser.getDomElement(xml); // getting DOM element
+		 
+		NodeList nl = doc.getElementsByTagName("nowplaying-info");
+		for (int i = 0; i < nl.getLength(); i++) {
+            Element e = (Element) nl.item(i);
+            String name = parser.getValue(e, "property name");
+            Log.v("AANCHAL", name);
+            }
 		return null;
 	}
+	
+	public String getValue(Element item, String str) {     
+	    NodeList n = item.getElementsByTagName(str);       
+	    return this.getElementValue(n.item(0));
+	}
+	
+	public final String getElementValue( Node elem ) {
+        Node child;
+        if( elem != null){
+            if (elem.hasChildNodes()){
+                for( child = elem.getFirstChild(); child != null; child = child.getNextSibling() ){
+                    if( child.getNodeType() == Node.TEXT_NODE  ){
+                        return child.getNodeValue();
+                    }
+                }
+            }
+        }
+        return "";
+ } 
+	
+	public String getXmlFromUrl(String url) {
+        String xml = null;
+ 
+        try {
+            // defaultHttpClient
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost(url);
+ 
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+            HttpEntity httpEntity = httpResponse.getEntity();
+            xml = EntityUtils.toString(httpEntity);
+ 
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // return XML
+        return xml;
+    }
+	
+	public Document getDomElement(String xml){
+        Document doc = null;
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        try {
+ 
+            DocumentBuilder db = dbf.newDocumentBuilder();
+ 
+            InputSource is = new InputSource();
+                is.setCharacterStream(new StringReader(xml));
+                doc = db.parse(is);
+ 
+            } catch (ParserConfigurationException e) {
+                Log.e("Error: ", e.getMessage());
+                return null;
+            } catch (SAXException e) {
+                Log.e("Error: ", e.getMessage());
+                return null;
+            } catch (IOException e) {
+                Log.e("Error: ", e.getMessage());
+                return null;
+            }
+                // return DOM
+            return doc;
+    }
 	
 	// query dishant and return last
 	private static Song[] getLastDishantSongs() {
