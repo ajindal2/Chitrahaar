@@ -138,7 +138,13 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
     player.setOnFullscreenListener(this);
     player.setPlayerStateChangeListener(playerStateChangeListener);
     if (!wasRestored) {
-      player.cueVideo("9c6W4CCU9M4");
+      //player.cueVideo("9c6W4CCU9M4");
+    	String videoId = songFactory.getNextVideoId();
+        if (videoId != null) {
+      	  m_player.cueVideo(videoId);
+        }
+        else
+      	  Toast.makeText(this, "Unable to get a new song. Please try again later", Toast.LENGTH_SHORT).show();
       player.setShowFullscreenButton(false);
     }
   }
