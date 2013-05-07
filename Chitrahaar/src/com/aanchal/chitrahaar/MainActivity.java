@@ -18,6 +18,7 @@ import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -36,6 +37,7 @@ import android.widget.Toast;
 public class MainActivity extends YouTubeFailureRecoveryActivity implements
     YouTubePlayer.OnFullscreenListener {
 	
+	private ConnectivityManager cm;
 	
 	private final class MyPlayerStateChangeListener implements PlayerStateChangeListener {
 	
@@ -46,7 +48,10 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
 
 	    @Override
 	    public void onVideoEnded() {
-	    	new Process().execute(null,null,null); 
+	    	if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable() && cm.getActiveNetworkInfo().isConnected())
+	    		new Process().execute(null,null,null); 
+	    	else 
+	    		Toast.makeText(getApplicationContext(), "No internet connection", Toast.LENGTH_LONG).show();
 	    }
 
 		@Override
@@ -76,23 +81,24 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
 	class Process extends AsyncTask<Object, Void, String> {
 		
 		 private ProgressDialog progressDialog; 
+		 
 		 @Override
 	        protected void onPreExecute()
 	        {
-	            super.onPreExecute();
-	            progressDialog = ProgressDialog.show(MainActivity.this, null, "Loading...", true, false); 
+	            super.onPreExecute();   
+	            progressDialog = ProgressDialog.show(MainActivity.this, null, "Loading next song...", true, false); 
 	        }
 
 	        @Override
 	        protected String doInBackground(Object... param) {
 	        	String videoId=songFactory.getNextVideoId();
-	        	 if (videoId != null) {
-	           	  m_player.cueVideo(videoId);
-	             }
-	             else
-	           	  Toast.makeText(getApplicationContext(), "Unable to get a new song. Please try again later", Toast.LENGTH_SHORT).show();
-	        	 progressDialog.dismiss();
-	        	 return null;
+		        if (videoId != null) {
+		        	m_player.cueVideo(videoId);
+		        }
+		        else
+		            Toast.makeText(getApplicationContext(), "Unable to get a new song. Please try again later", Toast.LENGTH_SHORT).show();
+		        progressDialog.dismiss();
+	        	return null;
 	        }
 
 	        @Override
@@ -112,7 +118,8 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Toast.makeText(getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
+    cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    
     playerStateChangeListener = new MyPlayerStateChangeListener();
     
     // TODO: This allows us to make networking calls on UI thread but discouraged
@@ -144,8 +151,11 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
 
-    case R.id.next_song:   	 
-      new Process().execute(null,null,null); 
+    case R.id.next_song:   	
+    	if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable() && cm.getActiveNetworkInfo().isConnected())
+    		 new Process().execute(null,null,null); 
+    	else 
+    		Toast.makeText(getApplicationContext(), "No internet connection", Toast.LENGTH_LONG).show();
       break;
       default:
         break;
@@ -163,7 +173,10 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
     player.setPlayerStateChangeListener(playerStateChangeListener);
 
     if (!wasRestored) {	
-    	new Process().execute(null,null,null); 
+    	if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isAvailable() && cm.getActiveNetworkInfo().isConnected())
+    		new Process().execute(null,null,null); 
+    	else 
+    		Toast.makeText(getApplicationContext(), "No internet connection", Toast.LENGTH_LONG).show();
     }
     player.setShowFullscreenButton(false);
   }
