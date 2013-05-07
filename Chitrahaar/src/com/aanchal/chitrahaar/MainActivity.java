@@ -83,8 +83,6 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
 	            progressDialog = ProgressDialog.show(MainActivity.this, null, "Loading...", true, false); 
 	        }
 
-
-	        @SuppressWarnings("unchecked")
 	        @Override
 	        protected String doInBackground(Object... param) {
 	        	String videoId=songFactory.getNextVideoId();
@@ -100,14 +98,11 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
 	        @Override
 	        protected void onPostExecute(String result)
 	        {
-	            super.onPostExecute(result);
-
-	            
+	            super.onPostExecute(result);	            
 	            progressDialog.dismiss();
 	        }
 	}
-	
-	
+		
   private ActionBarPaddedFrameLayout viewContainer;
   private YouTubePlayerFragment playerFragment;
   private YouTubePlayer m_player;
@@ -144,8 +139,6 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
       inflater.inflate(R.menu.main, menu);
       return true;
   }
-  
- 
     
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
@@ -153,7 +146,6 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
 
     case R.id.next_song:   	 
       new Process().execute(null,null,null); 
-
       break;
       default:
         break;
@@ -172,7 +164,6 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
 
     if (!wasRestored) {	
     	new Process().execute(null,null,null); 
-
     }
     player.setShowFullscreenButton(false);
   }
