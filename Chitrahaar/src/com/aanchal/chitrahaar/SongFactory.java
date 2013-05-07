@@ -40,7 +40,7 @@ import android.util.Log;
 
 // Retrieves and manages songs
 public class SongFactory {	
-	private static final int MAX_QUERY_SONGS = 10; // maximum query results per songs
+	private static final int MAX_QUERY_SONGS = 5; // maximum query results per songs
 	private static final String YOUTUBE_VIDEO_INFORMATION_URL = "http://www.youtube.com/get_video_info?&video_id=";
 	private static final String DISHANT_URL = "http://anyorigin.com/get/?url=dishant.com/radiojukebox.php?channel=new&action=0";
 	private static final String DISHANT_METADATA_URL = "http://anyorigin.com/get/?url=dishant.com/trackPlaylist.php?trackid=";
