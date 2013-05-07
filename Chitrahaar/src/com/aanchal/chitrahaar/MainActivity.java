@@ -15,10 +15,13 @@ import com.aanchal.chitrahaar.DeveloperKey;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +35,7 @@ import android.widget.Toast;
 @TargetApi(11)
 public class MainActivity extends YouTubeFailureRecoveryActivity implements
     YouTubePlayer.OnFullscreenListener {
+	
 	
 	private final class MyPlayerStateChangeListener implements PlayerStateChangeListener {
 	
@@ -63,7 +67,6 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
 		@Override
 		public void onLoading() {
 			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
@@ -73,7 +76,41 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
 		}
 	  }
 
+	class Process extends AsyncTask<Object, Void, String> {
+		
+		 private ProgressDialog progressDialog; 
+		 @Override
+	        protected void onPreExecute()
+	        {
+	            super.onPreExecute();
+	            progressDialog = ProgressDialog.show(MainActivity.this, null, "Loading...", true, false); 
+	        }
 
+
+	        @SuppressWarnings("unchecked")
+	        @Override
+	        protected String doInBackground(Object... param) {
+	        	String videoId=songFactory.getNextVideoId();
+	        	 if (videoId != null) {
+	           	  m_player.cueVideo(videoId);
+	             }
+	             else
+	           	  Toast.makeText(getApplicationContext(), "Unable to get a new song. Please try again later", Toast.LENGTH_SHORT).show();
+	        	 progressDialog.dismiss();
+	        	 return null;
+	        }
+
+	        @Override
+	        protected void onPostExecute(String result)
+	        {
+	            super.onPostExecute(result);
+
+	            
+	            progressDialog.dismiss();
+	        }
+	}
+	
+	
   private ActionBarPaddedFrameLayout viewContainer;
   private YouTubePlayerFragment playerFragment;
   private YouTubePlayer m_player;
@@ -83,7 +120,7 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    
+    Toast.makeText(getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
     playerStateChangeListener = new MyPlayerStateChangeListener();
     
     // TODO: This allows us to make networking calls on UI thread but discouraged
@@ -114,39 +151,33 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
-    case R.id.next_song:
-      String videoId = songFactory.getNextVideoId();
-      if (videoId != null) {
-    	  m_player.cueVideo(videoId);
-      }
-      else
-    	  Toast.makeText(this, "Unable to get a new song. Please try again later", Toast.LENGTH_SHORT).show();
+    case R.id.next_song:   	 
+      new Process().execute(null,null,null); 
       break;
-    default:
+      default:
         break;
       }
-
       return true;
  }
   
   @Override
-  public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player,
-      boolean wasRestored) {
+  public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean wasRestored) {
+	  
 	m_player = player;
     player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
     player.setFullscreen(true);
     player.setOnFullscreenListener(this);
     player.setPlayerStateChangeListener(playerStateChangeListener);
-    if (!wasRestored) {
-      //player.cueVideo("9c6W4CCU9M4");
-    	String videoId = songFactory.getNextVideoId();
+    if (!wasRestored) {	
+    	new Process().execute(null,null,null); 
+    	/*String videoId = songFactory.getNextVideoId();
         if (videoId != null) {
       	  m_player.cueVideo(videoId);
         }
         else
-      	  Toast.makeText(this, "Unable to get a new song. Please try again later", Toast.LENGTH_SHORT).show();
-      player.setShowFullscreenButton(false);
+      	  Toast.makeText(this, "Unable to get a new song. Please try again later", Toast.LENGTH_SHORT).show();     */
     }
+    player.setShowFullscreenButton(false);
   }
 
   @Override
