@@ -46,10 +46,7 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
 
 	    @Override
 	    public void onVideoEnded() {
-	    	String videoId = songFactory.getNextVideoId();
-	    	if (videoId != null) {
-	    		m_player.cueVideo(videoId);
-	    	}
+	    	new Process().execute(null,null,null); 
 	    }
 
 		@Override
@@ -147,12 +144,16 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
       inflater.inflate(R.menu.main, menu);
       return true;
   }
+  
+ 
     
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
+
     case R.id.next_song:   	 
       new Process().execute(null,null,null); 
+
       break;
       default:
         break;
@@ -168,14 +169,10 @@ public class MainActivity extends YouTubeFailureRecoveryActivity implements
     player.setFullscreen(true);
     player.setOnFullscreenListener(this);
     player.setPlayerStateChangeListener(playerStateChangeListener);
+
     if (!wasRestored) {	
     	new Process().execute(null,null,null); 
-    	/*String videoId = songFactory.getNextVideoId();
-        if (videoId != null) {
-      	  m_player.cueVideo(videoId);
-        }
-        else
-      	  Toast.makeText(this, "Unable to get a new song. Please try again later", Toast.LENGTH_SHORT).show();     */
+
     }
     player.setShowFullscreenButton(false);
   }

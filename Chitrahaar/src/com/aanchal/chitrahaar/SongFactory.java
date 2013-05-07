@@ -80,7 +80,7 @@ public class SongFactory {
 			}
 			else if(name.equals("track_artist_name")){
 				album=getCharacterDataFromElement(ele);
-				Song s= new Song(title, album, "");
+				Song s= new Song(title, album, album);
 				if(title.equals(lastPlayedDubaiSong_.title)&&album.equals(lastPlayedDubaiSong_.album)){				
 					break;
 				}
@@ -222,7 +222,7 @@ public class SongFactory {
 		JSONArray[] results = new JSONArray[3];
 		results[0] = getResults(song.getAlbumQueryString());
 		results[1] = getResults(song.getArtistQueryString());
-		results[2] = getResults(song.getTitleQueryString());
+		results[2] = getResults(song.getArtistAlbumQueryString());
 		int[] indexes = new int[3];
 		indexes[0] = indexes[1] = indexes[2] = 0;
 		while(true) {

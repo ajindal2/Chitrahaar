@@ -9,6 +9,7 @@ public class Song {
 	}
 	public String getAlbumQueryString()  { return (title + " " + album).replace(" ","%20"); }
 	public String getArtistQueryString() { return (title + " " + artist).replace(" ","%20"); }
+	public String getArtistAlbumQueryString() { return (title + " " + artist + " " + album).replace(" ","%20"); }
 	public String getTitleQueryString()  { return title.replace(" ","%20"); }
 	public String title;
 	public String album;
