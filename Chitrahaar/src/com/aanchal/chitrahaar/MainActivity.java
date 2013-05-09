@@ -1,18 +1,13 @@
 package com.aanchal.chitrahaar;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-
 import com.aanchal.chitrahaar.YouTubeFailureRecoveryActivity;
-import com.aanchal.chitrahaar.MainActivity.ActionBarPaddedFrameLayout;
 import com.google.android.youtube.player.YouTubePlayer.ErrorReason;
 import com.google.android.youtube.player.YouTubePlayer.PlayerStateChangeListener;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
-import com.google.android.youtube.player.YouTubePlayerView;
 import com.aanchal.chitrahaar.R;
 import com.aanchal.chitrahaar.DeveloperKey;
-
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ProgressDialog;
@@ -22,14 +17,11 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
