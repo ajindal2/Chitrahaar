@@ -1,1 +1,21 @@
-Dummy Readme
+Chitrahaar
+
+Chitrahaar is an Android application that The app automatically plays videos of latest Hindi songs from Youtube. The app parses xml feed of live online hindi radio stations to recover song metadata and uses that to search and play corresponding videos from Youtube. No manual intervention is needed.
+
+Download the app directly from Google play store at https://play.google.com/store/apps/details?id=com.aanchal.chitrahaar
+
+To run the code, replace the value of DEVELOPER_KEY in DeveloperKey.java from null to your own key. The instructions for registering your application to obtain an Android API key are availabel at https://developers.google.com/youtube/android/player/register.
+
+Bug tracker
+
+Have a bug report or a feature request? Please feel free to email me.
+
+Author
+
+Aanchal Jindal (aanchaljindal@gmail.com)
+
+Copyright and license
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the License. You may obtain a copy of the License in the LICENSE file, or at:
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License
